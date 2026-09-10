@@ -1,6 +1,6 @@
 # wookoon cas config
 wookooncas:
-  endpoint: "https://cas.geekor.fun"
+  endpoint: "https://cas.example.com"
   clientId: ""
   clientSecret: ""
   organization: ""
