@@ -24,8 +24,9 @@ type CallbackRequest struct {
 
 // CallbackResponse 回调响应
 type CallbackResponse struct {
-	Token string        `json:"token"`
-	User  *StandardUser `json:"user"`
+	Token        string        `json:"token"`
+	RefreshToken string        `json:"refresh"`
+	User         *StandardUser `json:"user"`
 }
 
 // AuthService 认证服务
@@ -81,9 +82,23 @@ func (s *AuthService) HandleCallback(req *CallbackRequest) (*CallbackResponse, e
 		return nil, err
 	}
 
+	// 4. 生成刷新用的 token
+	refresh, err2 := JwtGenerateRefreshToken(
+		&RefreshTokenGenParams{
+			UserID:    user.ID,
+			JWTSecret: s.core.Jwtcfg.Secret,
+			JWTExpire: s.core.Jwtcfg.RefreshExpires,
+			JWTIssuer: s.core.Jwtcfg.Issuer,
+		},
+	)
+	if err2 != nil {
+		return nil, err2
+	}
+
 	return &CallbackResponse{
-		Token: token,
-		User:  user,
+		Token:        token,
+		RefreshToken: refresh,
+		User:         user,
 	}, nil
 }
 

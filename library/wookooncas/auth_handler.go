@@ -1,8 +1,6 @@
 package wookooncas
 
 import (
-	"fmt"
-
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
@@ -57,7 +55,6 @@ func (h *AuthHandler) RedirectLogin(r *ghttp.Request) {
 	}
 
 	// c.Redirect(http.StatusFound, resp.LoginURL)
-	fmt.Printf("Re: %s\n", resp.LoginURL)
 	r.Response.RedirectTo(resp.LoginURL)
 }
 

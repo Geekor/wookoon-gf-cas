@@ -1,7 +1,6 @@
 package wookooncas
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gogf/gf/v2/errors/gcode"
@@ -37,7 +36,6 @@ func CasAuthed(jwtCfg *JwtConfig) ghttp.HandlerFunc {
 
 		// 验证 Token
 		claims, err := JwtParseToken(tokenString, jwtCfg.Secret)
-		fmt.Println(jwtCfg)
 		if err != nil {
 			message := "认证失败"
 			if err == ErrTokenExpired {
@@ -53,14 +51,6 @@ func CasAuthed(jwtCfg *JwtConfig) ghttp.HandlerFunc {
 		r.SetCtxVar(CtxUserPassport, claims.Username)
 		r.SetCtxVar(CtxUserEmail, claims.Email)
 		r.SetCtxVar(CtxUserRoles, claims.Roles)
-
-		// r.SetCtxVar("tokenString", tokenString)
-		// r.SetCtxVar("userId", claims.UserID)
-		// r.SetCtxVar("username", claims.Username)
-		// r.SetCtxVar("displayName", claims.DisplayName)
-		// r.SetCtxVar("email", claims.Email)
-		// r.SetCtxVar("roles", claims.Roles)
-		// r.SetCtxVar("claims", claims)
 
 		r.Middleware.Next()
 	}

@@ -13,7 +13,12 @@ type TokenGenParams struct {
 	DisplayName string
 	Email       string
 	Roles       []string
-
+	JWTSecret   string
+	JWTExpire   time.Duration
+	JWTIssuer   string
+}
+type RefreshTokenGenParams struct {
+	UserID    string
 	JWTSecret string
 	JWTExpire time.Duration
 	JWTIssuer string
@@ -33,6 +38,23 @@ var (
 	ErrTokenExpired = errors.New("token 已过期")
 	ErrTokenInvalid = errors.New("token 无效")
 )
+
+// 生成 刷新TOKEN
+func JwtGenerateRefreshToken(param *RefreshTokenGenParams) (string, error) {
+	claims := CustomClaims{
+		UserID: param.UserID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(param.JWTExpire)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    param.JWTIssuer,
+			Subject:   param.UserID,
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(param.JWTSecret))
+}
 
 // 签发业务系统 JWT
 func JwtGenerateToken(param *TokenGenParams) (string, error) {

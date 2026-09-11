@@ -20,9 +20,10 @@ type CasAuthConfig struct {
 }
 
 type JwtConfig struct {
-	Secret string
-	Expire time.Duration
-	Issuer string
+	Secret         string
+	Issuer         string
+	Expire         time.Duration
+	RefreshExpires time.Duration
 }
 
 func getCasConfigs() *CasAuthConfig {
@@ -47,8 +48,9 @@ func getJwtConfigs() *JwtConfig {
 	ctx := gctx.New()
 
 	return &JwtConfig{
-		Secret: g.Cfg().MustGet(ctx, "wookooncas.jwt.secret").String(),
-		Expire: g.Cfg().MustGet(ctx, "wookooncas.jwt.expires").Duration() * time.Hour,
-		Issuer: g.Cfg().MustGet(ctx, "wookooncas.jwt.issuer").String(),
+		Secret:         g.Cfg().MustGet(ctx, "wookooncas.jwt.secret").String(),
+		Issuer:         g.Cfg().MustGet(ctx, "wookooncas.jwt.issuer").String(),
+		Expire:         g.Cfg().MustGet(ctx, "wookooncas.jwt.expires").Duration() * time.Hour,
+		RefreshExpires: g.Cfg().MustGet(ctx, "wookooncas.jwt.refreshExpires").Duration() * time.Hour,
 	}
 }
