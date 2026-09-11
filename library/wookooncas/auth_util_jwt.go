@@ -118,7 +118,7 @@ func JwtParseClaims(tokenString string, secret string) (*CustomClaims, error) {
 		}
 	}
 
-	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*CustomClaims); ok {
 		return claims, nil
 	}
 

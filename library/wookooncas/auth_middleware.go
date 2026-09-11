@@ -2,6 +2,7 @@ package wookooncas
 
 import (
 	"strings"
+	"time"
 
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -38,6 +39,7 @@ func CasAuthed(jwtCfg *JwtConfig) ghttp.HandlerFunc {
 
 		// 验证 Token
 		claims, err := JwtParseToken(tokenString, jwtCfg.Secret)
+
 		if err == ErrTokenExpired {
 			rtoken := r.Header.Get("Wk-Refresh")
 			if rtoken != "" {
@@ -65,8 +67,9 @@ func CasAuthed(jwtCfg *JwtConfig) ghttp.HandlerFunc {
 							JWTIssuer:   jwtCfg.Issuer,
 						},
 					)
-					if err3 != nil {
-						r.Response.Header().Set("Wk-Token", ntoken)
+					if ntoken != "" && err3 == nil {
+						r.Response.Header().Add("Wk-Token", ntoken)
+						r.Response.Header().Add("Wk-Token-Expires", time.Now().Add(jwtCfg.Expire).Format(time.RFC3339))
 					}
 				}
 			}

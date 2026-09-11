@@ -2,9 +2,17 @@ package wookooncas
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/geekor/wookoon-gf-cas/library/eventbus"
 )
+
+type Tokens struct {
+	Token          string `json:"token"`
+	Refresh        string `json:"refresh"`
+	TokenExpires   string `json:"tokenExpires"`
+	RefreshExpires string `json:"refreshExpires"`
+}
 
 // LoginResponse 登录响应
 type LoginResponse struct {
@@ -24,15 +32,16 @@ type CallbackRequest struct {
 
 // CallbackResponse 回调响应
 type CallbackResponse struct {
-	Token        string        `json:"token"`
-	RefreshToken string        `json:"refresh"`
-	User         *StandardUser `json:"user"`
+	Tokens *Tokens       `json:"tokens"`
+	User   *StandardUser `json:"user"`
 }
 
 // AuthService 认证服务
 type AuthService struct {
 	core *CasServer
 }
+
+// ========================================================== FUNCTIONS ====
 
 // NewAuthService 创建认证服务
 func (s *CasServer) newAuthService() *AuthService {
@@ -96,9 +105,13 @@ func (s *AuthService) HandleCallback(req *CallbackRequest) (*CallbackResponse, e
 	}
 
 	return &CallbackResponse{
-		Token:        token,
-		RefreshToken: refresh,
-		User:         user,
+		Tokens: &Tokens{
+			Token:          token,
+			Refresh:        refresh,
+			TokenExpires:   time.Now().Add(s.core.Jwtcfg.Expire).Format(time.RFC3339),
+			RefreshExpires: time.Now().Add(s.core.Jwtcfg.RefreshExpires).Format(time.RFC3339),
+		},
+		User: user,
 	}, nil
 }
 
