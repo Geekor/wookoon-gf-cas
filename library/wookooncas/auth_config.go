@@ -50,7 +50,7 @@ func getJwtConfigs() *JwtConfig {
 	return &JwtConfig{
 		Secret:         g.Cfg().MustGet(ctx, "wookooncas.jwt.secret").String(),
 		Issuer:         g.Cfg().MustGet(ctx, "wookooncas.jwt.issuer").String(),
-		Expire:         g.Cfg().MustGet(ctx, "wookooncas.jwt.expires").Duration() * time.Hour,
-		RefreshExpires: g.Cfg().MustGet(ctx, "wookooncas.jwt.refreshExpires").Duration() * time.Hour,
+		Expire:         g.Cfg().MustGet(ctx, "wookooncas.jwt.expires").Duration() * time.Minute,
+		RefreshExpires: g.Cfg().MustGet(ctx, "wookooncas.jwt.refreshExpires").Duration() * time.Minute,
 	}
 }

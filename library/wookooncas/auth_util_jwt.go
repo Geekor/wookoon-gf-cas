@@ -102,3 +102,25 @@ func JwtParseToken(tokenString string, secret string) (*CustomClaims, error) {
 
 	return nil, ErrTokenInvalid
 }
+
+// （忽略过期错误）
+func JwtParseClaims(tokenString string, secret string) (*CustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		// 验证签名算法
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, ErrTokenInvalid
+		}
+		return []byte(secret), nil
+	})
+	if err != nil {
+		if !errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, ErrTokenInvalid
+		}
+	}
+
+	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, ErrTokenInvalid
+}

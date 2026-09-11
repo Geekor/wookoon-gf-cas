@@ -19,6 +19,8 @@ const (
 // JWT 验证中间件
 func CasAuthed(jwtCfg *JwtConfig) ghttp.HandlerFunc {
 	return func(r *ghttp.Request) {
+
+		// 获取 auth 信息
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			r.SetError(gerror.NewCode(gcode.CodeNotAuthorized, "未提供认证信息"))
@@ -36,6 +38,40 @@ func CasAuthed(jwtCfg *JwtConfig) ghttp.HandlerFunc {
 
 		// 验证 Token
 		claims, err := JwtParseToken(tokenString, jwtCfg.Secret)
+		if err == ErrTokenExpired {
+			rtoken := r.Header.Get("Wk-Refresh")
+			if rtoken != "" {
+				_, err2 := JwtParseToken(rtoken, jwtCfg.Secret)
+				if err2 == ErrTokenExpired {
+					r.SetError(gerror.NewCode(gcode.CodeNotAuthorized, "Token 已过期"))
+					return
+				} else if err2 != nil {
+					r.SetError(gerror.NewCode(gcode.CodeNotAuthorized, "认证失败"))
+					return
+				}
+
+				// 重新签发 token
+				claims, err = JwtParseClaims(tokenString, jwtCfg.Secret)
+				if err == nil {
+					ntoken, err3 := JwtGenerateToken(
+						&TokenGenParams{
+							UserID:      claims.UserID,
+							Username:    claims.Username,
+							DisplayName: claims.DisplayName,
+							Email:       claims.Email,
+							Roles:       claims.Roles,
+							JWTSecret:   jwtCfg.Secret,
+							JWTExpire:   jwtCfg.Expire,
+							JWTIssuer:   jwtCfg.Issuer,
+						},
+					)
+					if err3 != nil {
+						r.Response.Header().Set("Wk-Token", ntoken)
+					}
+				}
+			}
+		}
+
 		if err != nil {
 			message := "认证失败"
 			if err == ErrTokenExpired {

@@ -8,6 +8,6 @@ wookooncas:
   certificateFile: "manifest/config/certs/casdoor.pem"
   jwt:
     secret: "your-super-secret-key-at-least-32-characters"
-    expires: 2                          # accessToken 有效期（小时），即空闲超时，默认 2 小时
-    refreshExpires: 48                  # refreshToken 有效期（小时），即绝对会话上限，默认 48 小时
+    expires: 120            # accessToken 有效期（分钟），即空闲超时，默认 2 小时
+    refreshExpires: 2880    # refreshToken 有效期（分钟），即绝对会话上限，默认 48 小时
     issuer: "wookoon-cas"
