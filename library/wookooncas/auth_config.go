@@ -6,6 +6,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gfile"
+	"github.com/gogf/gf/v2/os/gres"
 )
 
 // CasAuthConfig is the core configuration.
@@ -30,7 +31,13 @@ func getCasConfigs() *CasAuthConfig {
 	ctx := gctx.New()
 
 	certf := g.Cfg().MustGet(ctx, "wookooncas.certificateFile").String()
-	certc := gfile.GetContents(certf)
+	certc := string(gres.GetContent(certf))
+	if certc == "" {
+		certc = gfile.GetContents(certf)
+	}
+
+	// g.Log().Info(ctx, "certf:", certf)
+	// g.Log().Info(ctx, "certc:", certc)
 
 	c := &CasAuthConfig{
 		Endpoint:     g.Cfg().MustGet(ctx, "wookooncas.endpoint").String(),
