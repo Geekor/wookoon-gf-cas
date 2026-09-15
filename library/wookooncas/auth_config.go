@@ -35,8 +35,9 @@ func getCasConfigs() *CasAuthConfig {
 	if certc == "" {
 		certc = gfile.GetContents(certf)
 	}
-
-	// g.Log().Info(ctx, "certf:", certf)
+	if certc == "" {
+		g.Log().Warning(ctx, "load wookoon cert failed:", certf)
+	}
 	// g.Log().Info(ctx, "certc:", certc)
 
 	c := &CasAuthConfig{

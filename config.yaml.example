@@ -5,7 +5,7 @@ wookooncas:
   clientSecret: ""
   organization: ""
   application: ""
-  certificateFile: "manifest/config/certs/casdoor.pem"
+  certificateFile: "config/certs/casdoor.pem"
   jwt:
     secret: "your-super-secret-key-at-least-32-characters"
     expires: 120            # accessToken 有效期（分钟），即空闲超时，默认 2 小时
